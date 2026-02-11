@@ -4,7 +4,11 @@ import { createClientSecretFetcher, workflowId } from "../lib/chatkitSession";
 
 export function ChatKitPanel() {
   const getClientSecret = useMemo(
-    () => createClientSecretFetcher(workflowId),
+    () =>
+  createClientSecretFetcher(
+    workflowId,
+    `${import.meta.env.VITE_API_URL}/api/create-session`
+  ),
     []
   );
 
