@@ -9,9 +9,14 @@ export const workflowId = (() => {
   return id;
 })();
 
+const apiBase = readEnvString(import.meta.env.VITE_API_URL);
+const defaultEndpoint = apiBase
+  ? `${apiBase.replace(/\/$/, "")}/api/create-session`
+  : "/api/create-session";
+
 export function createClientSecretFetcher(
   workflow: string,
-  endpoint = "/api/create-session"
+  endpoint = defaultEndpoint
 ) {
   return async (currentSecret: string | null) => {
     if (currentSecret) return currentSecret;
@@ -27,14 +32,10 @@ export function createClientSecretFetcher(
       error?: string;
     };
 
-    if (!response.ok) {
-      throw new Error(payload.error ?? "Failed to create session");
-    }
-
-    if (!payload.client_secret) {
-      throw new Error("Missing client secret in response");
-    }
+    if (!response.ok) throw new Error(payload.error ?? "Failed to create session");
+    if (!payload.client_secret) throw new Error("Missing client secret in response");
 
     return payload.client_secret;
   };
 }
+
